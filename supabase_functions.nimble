@@ -1,0 +1,6 @@
+version     = "0.0.1"
+author      = "Juan Carlos"
+description = "Supabase Edge Functions API Client"
+license     = "MIT"
+srcDir      = "src"
+requires "nim >= 2.0.0"

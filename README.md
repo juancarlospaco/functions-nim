@@ -1,1 +1,1 @@
-# functions-nim
+# Supabase Edge Functions API Client
