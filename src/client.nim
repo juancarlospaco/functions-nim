@@ -32,12 +32,12 @@ type
 
 proc close*(self: SyncFunctionsClient | AsyncFunctionsClient) = self.client.close()
 
-proc newSyncFunctionsClient*(url, apiKey: string; maxRedirects = 9.Positive; timeout = -1; proxy: Proxy = nil): SyncFunctionsClient {.inline.} =
+proc newSyncFunctionsClient*(url, apiKey: string; maxRedirects = 9.Positive; timeout: -1..int.high = -1; proxy: Proxy = nil): SyncFunctionsClient {.inline.} =
   SyncFunctionsClient(url: url, client: newHttpClient(userAgent="supabase/functions-nim v" & NimVersion, maxRedirects=maxRedirects, timeout=timeout, proxy=proxy,
     headers=newHttpHeaders({"Content-Type": "application/json", "Authorization": "Bearer " & apiKey})
   ))
 
-proc newAsyncFunctionsClient*(url, apiKey: string; maxRedirects = 9.Positive; timeout = -1; proxy: Proxy = nil): AsyncFunctionsClient {.inline.} =
+proc newAsyncFunctionsClient*(url, apiKey: string; maxRedirects = 9.Positive; timeout: -1..int.high = -1; proxy: Proxy = nil): AsyncFunctionsClient {.inline.} =
   AsyncFunctionsClient(url: url, client: newAsyncHttpClient(userAgent="supabase/functions-nim v" & NimVersion, maxRedirects=maxRedirects, proxy=proxy,
     headers=newHttpHeaders({"Content-Type": "application/json", "Authorization": "Bearer " & apiKey})
   ))
