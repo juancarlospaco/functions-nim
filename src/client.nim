@@ -34,12 +34,12 @@ proc close*(self: SyncFunctionsClient | AsyncFunctionsClient) {.inline.} = self.
 
 proc newSyncFunctionsClient*(url, apiKey: string; maxRedirects = 9.Positive; timeout: -1..int.high = -1; proxy: Proxy = nil): SyncFunctionsClient =
   SyncFunctionsClient(url: url, client: newHttpClient(userAgent="supabase/functions-nim v" & NimVersion, maxRedirects=maxRedirects, timeout=timeout, proxy=proxy,
-    headers=newHttpHeaders({"Content-Type": "application/json", "Authorization": "Bearer " & apiKey})
+    headers=newHttpHeaders({"Content-Type": "application/json", "Connection": "Keep-Alive", "Authorization": "Bearer " & apiKey})
   ))
 
 proc newAsyncFunctionsClient*(url, apiKey: string; maxRedirects = 9.Positive; timeout: -1..int.high = -1; proxy: Proxy = nil): AsyncFunctionsClient =
   AsyncFunctionsClient(url: url, client: newAsyncHttpClient(userAgent="supabase/functions-nim v" & NimVersion, maxRedirects=maxRedirects, proxy=proxy,
-    headers=newHttpHeaders({"Content-Type": "application/json", "Authorization": "Bearer " & apiKey})
+    headers=newHttpHeaders({"Content-Type": "application/json", "Connection": "Keep-Alive", "Authorization": "Bearer " & apiKey})
   ))
 
 proc invoke*(self: SyncFunctionsClient | AsyncFunctionsClient; functionName: string, body = ""; responseType = SFResponseType.Json; region = SFRegion.Any; httpMethod = HttpPost; multipart: MultipartData = nil; apiKey = ""): auto =
