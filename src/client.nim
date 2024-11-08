@@ -1,4 +1,4 @@
-import std/httpclient
+import std/[httpclient, assertions]
 
 type
   SyncFunctionsClient* = object
@@ -30,19 +30,26 @@ type
     Json = "application/json"
     Text = "text/plain"
 
+template is_ok_arg(url, apiKey: string) =
+  assert url.len > 0, "url must be a valid HTTP URL string"
+  assert apiKey.len > 0, "apiKey must be a valid JWT string"
+
 proc close*(self: SyncFunctionsClient | AsyncFunctionsClient) {.inline.} = self.client.close()
 
 proc newSyncFunctionsClient*(url, apiKey: string; maxRedirects = 9.Positive; timeout: -1..int.high = -1; proxy: Proxy = nil): SyncFunctionsClient =
+  is_ok_arg(url, apiKey)
   SyncFunctionsClient(url: url, client: newHttpClient(userAgent="supabase/functions-nim v" & NimVersion, maxRedirects=maxRedirects, timeout=timeout, proxy=proxy,
     headers=newHttpHeaders({"Content-Type": "application/json", "Connection": "Keep-Alive", "Authorization": "Bearer " & apiKey})
   ))
 
 proc newAsyncFunctionsClient*(url, apiKey: string; maxRedirects = 9.Positive; timeout: -1..int.high = -1; proxy: Proxy = nil): AsyncFunctionsClient =
+  is_ok_arg(url, apiKey)
   AsyncFunctionsClient(url: url, client: newAsyncHttpClient(userAgent="supabase/functions-nim v" & NimVersion, maxRedirects=maxRedirects, proxy=proxy,
     headers=newHttpHeaders({"Content-Type": "application/json", "Connection": "Keep-Alive", "Authorization": "Bearer " & apiKey})
   ))
 
 proc invoke*(self: SyncFunctionsClient | AsyncFunctionsClient; functionName: string, body = ""; responseType = SFResponseType.Json; region = SFRegion.Any; httpMethod = HttpPost; multipart: MultipartData = nil; apiKey = ""): auto =
+  assert functionName.len > 0, "functionName must be a valid Edge Function name string"
   # https://github.com/supabase/functions-js/blob/19512a44aa3b8e4ea89a825899a4e1b2223368af/src/FunctionsClient.ts#L37-L39
   if apiKey.len > 100: self.client.headers["Authorization"] = "Bearer " & apiKey
   # https://github.com/supabase/functions-js/blob/098537a0f5e1c2b2aca8891625c4deca846b0591/src/FunctionsClient.ts#L85-L86
